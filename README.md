@@ -42,9 +42,7 @@ const httpServer = new HTTPServer()
 # Stop and restart
 
 ```js
-const webRockets = new WebRockets();
-
-webRockets
+const webRockets = new WebRockets()
   .stop()
   .then(() => webRockets.start());
 ```
