@@ -42,11 +42,11 @@ const httpServer = new HTTPServer()
 # Stop and restart
 
 ```js
-const socketServer = new WebRockets();
+const webRockets = new WebRockets();
 
-socketServer
+webRockets
   .stop()
-  .then(() => socketServer.start());
+  .then(() => webRockets.start());
 ```
 
 # Listeners
