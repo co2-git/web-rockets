@@ -32,7 +32,12 @@ class WebRockets extends EventEmitter {
     }
   }
 
-  addListener (event, cb) {
+  use (middleware) {
+    this.io.use(middleware);
+    return this;
+  }
+
+  listen(event, cb) {
     if ( ! this._listeners[event] ) {
       this._listeners[event] = [];
     }
@@ -42,13 +47,31 @@ class WebRockets extends EventEmitter {
     process.nextTick(() => {
       if ( this.status && this.io.sockets ) {
         for ( let socket in this.io.sockets.sockets ) {
-          this.io.sockets.sockets[socket].on(event, (...messages) => cb(this.io.sockets.sockets[socket], ...messages));
+          const $socket = this.io.sockets.sockets[socket];
+          $socket.on(event, cb.bind(null, $socket));
         }
       }
-      else {
+    });
 
+    return this;
+  }
+
+  unlisten(event, cb) {
+    if ( ! this._listeners[event] ) {
+      return this;
+    }
+
+    this._listeners[event] = this._listeners[event].filter(fn => fn !== cb);
+
+    process.nextTick(() => {
+      if ( this.io.sockets ) {
+        for ( let socket in this.io.sockets.sockets ) {
+          this.io.sockets.sockets[socket].off(event, cb);
+        }
       }
     });
+
+    return this;
   }
 }
 

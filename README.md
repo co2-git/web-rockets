@@ -55,8 +55,8 @@ You can add or remove listeners like this:
 const ping = socket => socket.emit('pong');
 
 new WebRockets()
-  .addListener('ping', ping)
-  .removeListener('ping', ping);
+  .listen('ping', ping)
+  .unlisten('ping', ping);
 ```
 
 # Middleware
