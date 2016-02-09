@@ -69,10 +69,10 @@ new WebRockets()
 
 # Authentification by cookie
 
-We support authentication via cookie if you also install `web-rockets-cookie-auth`.
+We support authentication via cookie if you also install `web-rockets-cookie`.
 
 ```js
-import identifyByCookie from 'web-rockets-cookie-auth';
+import identifyByCookie from 'web-rockets-cookie';
 
 new WebRockets()
   .use(identifyByCookie(
