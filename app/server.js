@@ -2,6 +2,7 @@
 
 import SocketIO             from 'socket.io';
 import { EventEmitter }     from 'events';
+import http                 from 'http';
 
 class WebRockets extends EventEmitter {
 
@@ -11,8 +12,18 @@ class WebRockets extends EventEmitter {
 
   constructor (server) {
     super();
-    this.server = server;
+
+    if ( ! server ) {
+      this.server = http.createServer();
+      this.server.listen();
+    }
+
+    else {
+      this.server = server;
+    }
+
     process.nextTick(this.start.bind(this));
+    
     this.on('listening', () => { this.status = 1 });
   }
 

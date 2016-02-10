@@ -12,6 +12,10 @@ var _socket2 = _interopRequireDefault(_socket);
 
 var _events = require('events');
 
+var _http = require('http');
+
+var _http2 = _interopRequireDefault(_http);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -31,8 +35,16 @@ var WebRockets = function (_EventEmitter) {
     _this._listeners = {};
     _this.status = 0;
 
-    _this.server = server;
+
+    if (!server) {
+      _this.server = _http2.default.createServer();
+      _this.server.listen();
+    } else {
+      _this.server = server;
+    }
+
     process.nextTick(_this.start.bind(_this));
+
     _this.on('listening', function () {
       _this.status = 1;
     });
@@ -70,8 +82,14 @@ var WebRockets = function (_EventEmitter) {
       }
     }
   }, {
-    key: 'addListener',
-    value: function addListener(event, cb) {
+    key: 'use',
+    value: function use(middleware) {
+      this.io.use(middleware);
+      return this;
+    }
+  }, {
+    key: 'listen',
+    value: function listen(event, cb) {
       var _this3 = this;
 
       if (!this._listeners[event]) {
@@ -82,21 +100,37 @@ var WebRockets = function (_EventEmitter) {
 
       process.nextTick(function () {
         if (_this3.status && _this3.io.sockets) {
-          var _loop2 = function _loop2(socket) {
-            _this3.io.sockets.sockets[socket].on(event, function () {
-              for (var _len2 = arguments.length, messages = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-                messages[_key2] = arguments[_key2];
-              }
-
-              return cb.apply(undefined, [_this3.io.sockets.sockets[socket]].concat(messages));
-            });
-          };
-
           for (var socket in _this3.io.sockets.sockets) {
-            _loop2(socket);
+            var $socket = _this3.io.sockets.sockets[socket];
+            $socket.on(event, cb.bind(null, $socket));
           }
-        } else {}
+        }
       });
+
+      return this;
+    }
+  }, {
+    key: 'unlisten',
+    value: function unlisten(event, cb) {
+      var _this4 = this;
+
+      if (!this._listeners[event]) {
+        return this;
+      }
+
+      this._listeners[event] = this._listeners[event].filter(function (fn) {
+        return fn !== cb;
+      });
+
+      process.nextTick(function () {
+        if (_this4.io.sockets) {
+          for (var socket in _this4.io.sockets.sockets) {
+            _this4.io.sockets.sockets[socket].off(event, cb);
+          }
+        }
+      });
+
+      return this;
     }
   }]);
 
