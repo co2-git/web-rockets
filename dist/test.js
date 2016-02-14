@@ -49,33 +49,50 @@ function test() {
       return _server2.default.should.be.a.Function();
     });
 
-    it('should be an instance of EventEmitter', function () {
-      return locals.server.should.be.an.instanceof(_events.EventEmitter);
-    });
+    it('Instantiate', function (it) {
+      it('should be an instance of EventEmitter', function () {
+        return locals.server.should.be.an.instanceof(_events.EventEmitter);
+      });
 
-    it('should have a http server', function () {
-      return locals.server.should.have.property('server').which.is.an.instanceof(_http2.default.Server);
-    });
+      it('should have a http server', function () {
+        return locals.server.should.have.property('server').which.is.an.instanceof(_http2.default.Server);
+      });
 
-    it('should not have error', function () {
-      return (0, _should2.default)(locals.serverError).be.null();
-    });
+      it('should not have error', function () {
+        return (0, _should2.default)(locals.serverError).be.null();
+      });
 
-    it('should be listening', function () {
-      return new Promise(function (ok, ko) {
-        if (locals.serverListening) {
-          return ok();
-        }
-        var started = undefined;
-        locals.server.on('listening', function () {
-          started = true;
-          ok();
-        });
-        setTimeout(function () {
-          if (!started) {
-            ko(new Error('Server still not started'));
+      it('should be listening', function () {
+        return new Promise(function (ok, ko) {
+          if (locals.serverListening) {
+            return ok();
           }
-        }, 2500);
+          var started = undefined;
+          locals.server.on('listening', function () {
+            started = true;
+            ok();
+          });
+          setTimeout(function () {
+            if (!started) {
+              ko(new Error('Server still not started'));
+            }
+          }, 2500);
+        });
+      });
+
+      it('should stop', function () {
+        return new Promise(function (ok, ko) {
+          locals.server.stop().then(ok, ko);
+        });
+      });
+    });
+
+    it('.use()', function (it) {
+      it('use use()', function () {
+        locals.server = new _server2.default().use(function (socket, next) {
+          socket.foo = true;
+          next();
+        });
       });
     });
   });
