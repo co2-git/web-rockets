@@ -120,13 +120,17 @@ var WebRockets = function (_EventEmitter) {
   }, {
     key: 'use',
     value: function use(middleware) {
-      this.io.use(middleware);
+      var _this5 = this;
+
+      process.nextTick(function () {
+        return _this5.io.use(middleware);
+      });
       return this;
     }
   }, {
     key: 'listen',
     value: function listen(event, cb) {
-      var _this5 = this;
+      var _this6 = this;
 
       if (!this.listeners[event]) {
         this.listeners[event] = [];
@@ -135,9 +139,9 @@ var WebRockets = function (_EventEmitter) {
       this.listeners[event].push(cb);
 
       process.nextTick(function () {
-        if (_this5.status && _this5.io.sockets) {
-          for (var socket in _this5.io.sockets.sockets) {
-            var $socket = _this5.io.sockets.sockets[socket];
+        if (_this6.status && _this6.io.sockets) {
+          for (var socket in _this6.io.sockets.sockets) {
+            var $socket = _this6.io.sockets.sockets[socket];
             $socket.on(event, cb.bind(null, $socket));
           }
         }
@@ -148,7 +152,7 @@ var WebRockets = function (_EventEmitter) {
   }, {
     key: 'unlisten',
     value: function unlisten(event, cb) {
-      var _this6 = this;
+      var _this7 = this;
 
       if (!this.listeners[event]) {
         return this;
@@ -159,9 +163,9 @@ var WebRockets = function (_EventEmitter) {
       });
 
       process.nextTick(function () {
-        if (_this6.io.sockets) {
-          for (var socket in _this6.io.sockets.sockets) {
-            _this6.io.sockets.sockets[socket].off(event, cb);
+        if (_this7.io.sockets) {
+          for (var socket in _this7.io.sockets.sockets) {
+            _this7.io.sockets.sockets[socket].off(event, cb);
           }
         }
       });

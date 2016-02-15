@@ -75,7 +75,7 @@ class WebRockets extends EventEmitter {
   }
 
   use (middleware) {
-    this.io.use(middleware);
+    process.nextTick(() => this.io.use(middleware));
     return this;
   }
 
