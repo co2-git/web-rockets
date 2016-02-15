@@ -1,7 +1,7 @@
 web-rockets
 ===
 
-Start/stop a socket.io server in a few lines. Useful for prototyping.
+Start/stop and customize a socket.io server in a few lines. Useful for prototyping.
 
 # Install
 
@@ -35,8 +35,8 @@ httpServer.listen(() => new WebRockets(httpServer));
 ```js
 import HTTPServer from 'express-emitter';
 
-const httpServer = new HTTPServer()
-  .on('listening', () => new WebRockets(httpServer));
+const http = new HTTPServer()
+  .on('listening', () => new WebRockets(http.server));
 ```
 
 # Stop and restart

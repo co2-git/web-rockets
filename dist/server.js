@@ -33,7 +33,7 @@ var WebRockets = function (_EventEmitter) {
     var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(WebRockets).call(this));
 
     _this.listeners = {};
-    _this.sockets = {};
+    _this.sockets = [];
     _this.status = 0;
 
 

@@ -8,7 +8,7 @@ class WebRockets extends EventEmitter {
 
   listeners = {};
 
-  sockets = {};
+  sockets = [];
 
   status = 0;
 
