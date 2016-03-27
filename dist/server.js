@@ -27,16 +27,23 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var WebRockets = function (_EventEmitter) {
   _inherits(WebRockets, _EventEmitter);
 
+  /** Constructor - Start a new Socket.io server
+   *
+   *  @arg {HttpServer} server - the HTTP server to attach the Socket server to
+   */
+
+  // list of sockets (clients) connected to server
+
   function WebRockets(server) {
     _classCallCheck(this, WebRockets);
+
+    // If no HTTP server is given, we'll spring one
 
     var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(WebRockets).call(this));
 
     _this.listeners = {};
     _this.sockets = [];
     _this.status = 0;
-
-
     if (!server) {
       _this.server = _http2.default.createServer();
       _this.server.listen();
@@ -44,13 +51,27 @@ var WebRockets = function (_EventEmitter) {
       _this.server = server;
     }
 
+    // Starting socket server
+    // (we use next tick to make sure EventEmitter can emit)
     process.nextTick(_this.start.bind(_this));
 
+    // Once server is up, change status to reflect that
     _this.on('listening', function () {
       _this.status = 1;
     });
+
+    // Ditto for server downº
+    _this.on('stopped', function () {
+      _this.status = 0;
+    });
     return _this;
   }
+
+  // The actual function that starts the server
+
+  // 0 for server down, 1 for server up
+
+  // messages we are listening to
 
   _createClass(WebRockets, [{
     key: 'start',
@@ -58,48 +79,69 @@ var WebRockets = function (_EventEmitter) {
       var _this2 = this;
 
       this.io = _socket2.default.listen(this.server);
+
       this.emit('listening');
+
       this.io.on('error', this.emit.bind(this, 'error')).on('connection', this.client.bind(this)).use(function (socket, next) {
+        // add new client to  list of clients
         _this2.sockets.push(socket);
         next();
       });
     }
+
+    // Gracefully stop the socket server
+
   }, {
     key: 'stop',
     value: function stop() {
       var _this3 = this;
 
-      return new Promise(function (ok, ko) {
+      return new Promise(function (pass, fail) {
+
+        _this3.emit('stopping');
+
+        // If no clients, stop server now
 
         if (!_this3.sockets.length) {
-          return ok();
+          return pass();
         }
 
+        // Disconnect each socket asynchronously
+
         var promises = _this3.sockets.map(function (socket) {
-          return new Promise(function (ok, ko) {
+          return new Promise(function (pass, fail) {
             if (!socket.connected) {
-              return ok();
+              return pass();
             }
 
-            socket.on('disconnect', ok).disconnect(true);
+            socket.on('disconnect', pass).disconnect(true);
           });
         });
 
-        Promise.all(promises).then(ok, ko);
+        // Once all sockets are disconnected
+
+        Promise.all(promises).then(function () {
+          _this3.emit('stopped');
+          pass();
+        }).catch(fail);
       });
     }
+
+    // To be called on each client connection
+
   }, {
     key: 'client',
     value: function client(socket) {
       var _this4 = this;
 
-      socket.emit('Welcome!');
-
+      // Handle disconnects - remove socket from list of sockets
       socket.on('disconnect', function () {
         return _this4.sockets = _this4.sockets.filter(function ($socket) {
           return $socket.id !== socket.id;
         });
       });
+
+      // Attach event listeners to client
 
       var _loop = function _loop(event) {
         _this4.listeners[event].forEach(function (cb) {
@@ -117,6 +159,9 @@ var WebRockets = function (_EventEmitter) {
         _loop(event);
       }
     }
+
+    // Add middleware
+
   }, {
     key: 'use',
     value: function use(middleware) {
@@ -127,6 +172,9 @@ var WebRockets = function (_EventEmitter) {
       });
       return this;
     }
+
+    // Add an event listener
+
   }, {
     key: 'listen',
     value: function listen(event, cb) {
@@ -137,6 +185,9 @@ var WebRockets = function (_EventEmitter) {
       }
 
       this.listeners[event].push(cb);
+
+      // If listen is called when there are already clients connected
+      //  then these clients are not listening - so we'll make them listen here
 
       process.nextTick(function () {
         if (_this6.status && _this6.io.sockets) {
@@ -149,6 +200,9 @@ var WebRockets = function (_EventEmitter) {
 
       return this;
     }
+
+    // Remove a listener
+
   }, {
     key: 'unlisten',
     value: function unlisten(event, cb) {
@@ -161,6 +215,10 @@ var WebRockets = function (_EventEmitter) {
       this.listeners[event] = this.listeners[event].filter(function (fn) {
         return fn !== cb;
       });
+
+      // If unlisten is called when there are already clients connected
+      //  then these clients might still be listening
+      // - so we'll make them unlisten here
 
       process.nextTick(function () {
         if (_this7.io.sockets) {
