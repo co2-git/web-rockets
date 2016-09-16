@@ -1,6 +1,6 @@
 {
   "name": "web-rockets",
-  "version": "1.0.7",
+  "version": "2.0.0",
   "description": "Start/stop and customize a socket.io server in a few lines. Useful for prototyping.",
   "main": "dist/server.js",
   "scripts": {

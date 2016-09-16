@@ -144,6 +144,8 @@ class WebRockets extends EventEmitter {
       }
     });
 
+    this.on(event, cb);
+
     return this;
   }
 
