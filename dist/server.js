@@ -38,8 +38,7 @@ var WebRockets = function (_EventEmitter) {
     _classCallCheck(this, WebRockets);
 
     // If no HTTP server is given, we'll spring one
-
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(WebRockets).call(this));
+    var _this = _possibleConstructorReturn(this, (WebRockets.__proto__ || Object.getPrototypeOf(WebRockets)).call(this));
 
     _this.listeners = {};
     _this.sockets = [];

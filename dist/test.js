@@ -29,7 +29,7 @@ var _package2 = _interopRequireDefault(_package);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function test() {
-  var props = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+  var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
   var locals = {
     server: new _server2.default(),
@@ -67,7 +67,7 @@ function test() {
           if (locals.serverListening) {
             return ok();
           }
-          var started = undefined;
+          var started = void 0;
           locals.server.on('listening', function () {
             started = true;
             ok();
