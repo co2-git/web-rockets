@@ -7,7 +7,7 @@
     "test": "redtea dist/test.js",
     "start": "node server.js",
     "babel": "babel --out-dir dist app",
-    "babel-watch": "babel --watch --out-dir dist app"
+    "babel:watch": "babel --watch --out-dir dist app"
   },
   "author": "",
   "license": "ISC",
