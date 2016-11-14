@@ -1,24 +1,39 @@
 {
   "name": "web-rockets",
-  "version": "1.0.7",
+  "version": "2.1.0",
   "description": "Start/stop and customize a socket.io server in a few lines. Useful for prototyping.",
   "main": "dist/server.js",
   "scripts": {
     "test": "redtea dist/test.js",
     "start": "node server.js",
     "babel": "babel --out-dir dist app",
-    "babel:watch": "babel --watch --out-dir dist app"
+    "babel:watch": "babel --watch --out-dir dist app",
+    "eslint": "eslint app"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "babel-cli": "^6.5.1",
-    "babel-preset-es2015": "^6.5.0",
-    "babel-preset-stage-0": "^6.5.0",
+    "babel-cli": "^6.18.0",
+    "babel-eslint": "^7.1.0",
+    "babel-plugin-transform-flow-strip-types": "^6.18.0",
+    "babel-preset-es2015": "^6.18.0",
+    "babel-preset-stage-0": "^6.16.0",
+    "eslint": "^3.10.0",
+    "eslint-plugin-flowtype": "^2.25.0",
+    "flow-bin": "^0.35.0",
     "redtea": "^3.4.1",
     "should": "^8.2.2"
   },
   "dependencies": {
     "socket.io": "^1.4.5"
+  },
+  "babel": {
+    "presets": [
+      "es2015",
+      "stage-0"
+    ],
+    "plugins": [
+      "transform-flow-strip-types"
+    ]
   }
 }
