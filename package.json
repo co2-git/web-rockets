@@ -2,7 +2,7 @@
   "name": "web-rockets",
   "version": "2.1.0",
   "description": "Start/stop and customize a socket.io server in a few lines. Useful for prototyping.",
-  "main": "dist/index.js",
+  "main": "dist/server.js",
   "scripts": {
     "test": "redtea dist/test.js",
     "start": "node server.js",
